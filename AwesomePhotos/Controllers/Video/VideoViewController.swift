@@ -23,6 +23,9 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
     @IBOutlet weak var fileStorage: UIButton!
     @IBOutlet weak var recordingButton: UIButton!
     @IBOutlet weak var darkBottomView: UIView!
+    var progressStatusCompleted : Float?
+    var uploadTask : StorageUploadTask?
+
     
     let db = Firestore.firestore()
     let userUid = Auth.auth().currentUser?.uid
@@ -164,8 +167,9 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
                             if let error = error {
                                 print(error.localizedDescription)
                             } else {
+                                
                                 let uploadVideoPath = videoStorageReference.child(videoName + "-\(value).mov")
-                                _ = uploadVideoPath.putFile(from: result.processedUrl!, metadata: storageMetaData){metadata, error in
+                                self.uploadTask = uploadVideoPath.putFile(from: result.processedUrl!, metadata: storageMetaData){metadata, error in
                                     if (error != nil) {
                                         print("Error is", error as Any)
                                     } else {
@@ -204,12 +208,33 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
                             }
                         }
                     }
+                    self.observeVideoProgress()
                 }
             }
         }
         
         self.db.collection("users").document(userUid!).updateData(
             ["ownedVideos":FieldValue.arrayUnion([reference!.documentID])])
+    }
+    
+    func observeVideoProgress(){
+        
+        let progressName = Notification.Name(rawValue: progressCapturedKey)
+        
+        //Observes where the progress of the file is at in %
+        uploadTask!.observe(.progress) { [weak self] (snapshot) in
+            guard let progressStatus = snapshot.progress else { return }
+            
+            self!.progressStatusCompleted = Float(progressStatus.fractionCompleted)
+            
+            //Adds observer to listen when photo is being uploaded
+            let statuses = ["" : self!.progressStatusCompleted]
+            NotificationCenter.default.post(name: progressName, object: self, userInfo: statuses as [AnyHashable : Any])
+        }
+        
+        let thumbnailName = Notification.Name(rawValue: thumbnailCapturedKey)
+        NotificationCenter.default.post(name: thumbnailName, object: self)
+        
     }
     
    

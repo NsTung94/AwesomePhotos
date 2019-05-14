@@ -45,6 +45,7 @@ class PreviewmageViewController : UIViewController {
     
     var isDismissed = false
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
         if isDismissed == false {
             backBtn.isHidden = true
             saveIcon.isHidden = true
@@ -79,6 +80,13 @@ class PreviewmageViewController : UIViewController {
     //1. Uploads the taken photo to Firebase Storage
     @IBAction func uploadToStorageButtonPressed(_ sender: UIButton) {
         self.delegate?.uploadImage()
+        
+        let images = ["" : self.image]
+        let thumbnailName = Notification.Name(rawValue: thumbnailCapturedKey)
+        NotificationCenter.default.post(name: thumbnailName, object: self, userInfo: images as  [AnyHashable : Any])
+        
+        
+        
         performSegue(withIdentifier: "segueToProgress", sender: self)
         print("Uploading to Storage")
     }

@@ -9,19 +9,20 @@ import UIKit
 
 let progressCapturedKey = "AwesomePhotos.ProgressCaptured"
 let thumbnailCapturedKey = "AwesomePhotos.ThumbnailCaptured"
+let progressBarNotification = Notification.Name(rawValue: progressCapturedKey)
+let thumbnailNotification = Notification.Name(rawValue: thumbnailCapturedKey)
 
 
 class ProgressTableViewCellControllerTableViewCell: UITableViewCell {
     
     @IBOutlet weak var abortButton: UIButton!
     @IBOutlet weak var uploadName: UILabel!
-    @IBOutlet weak var thumbnailImage: UIImageView?
     @IBOutlet weak var progressBarView: UIProgressView!
+    @IBOutlet weak var thumbnailImage: UIImageView!
     
-    let progressBarNotification = Notification.Name(rawValue: progressCapturedKey)
-    let thumbnailNotification = Notification.Name(rawValue: thumbnailCapturedKey)
-    
-    var preview = PreviewmageViewController()
+
+    var previewVC = PreviewmageViewController()
+    var cameraVC = CameraViewController()
     lazy var smallId = randomStringWithLength(len: 6)
     
     override func awakeFromNib() {
@@ -32,19 +33,16 @@ class ProgressTableViewCellControllerTableViewCell: UITableViewCell {
         progressBarView.layer.sublayers![1].cornerRadius = 8
         progressBarView.subviews[1].clipsToBounds = true
         
+        
+        NotificationCenter.default.addObserver(forName: thumbnailNotification,
+                                               object: nil,
+                                               queue: nil,
+                                               using: catchThumbnail)
+        
         NotificationCenter.default.addObserver(forName: progressBarNotification,
                                                object: nil,
                                                queue: nil,
                                                using: catchProgressNotification)
-        
-        
-        NotificationCenter.default.addObserver(forName: thumbnailNotification,
-                                               object: nil,
-                                               queue: nil)
-        { (notification) in
-            let preview = notification.object as! PreviewmageViewController
-            self.thumbnailImage?.image = preview.photo.image
-        }
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -62,26 +60,25 @@ class ProgressTableViewCellControllerTableViewCell: UITableViewCell {
         thumbnailImage?.image = progressCell.image
     }
     
-    
-    func catchProgressNotification(notification:Notification){
+    func catchThumbnail(notification : Notification){
+
+        guard let thumbNail = notification.userInfo as? [String : UIImage] else {return}
+        for (value) in thumbNail.values{
+            print(value)
+            self.thumbnailImage.image = value
+            self.thumbnailImage.sizeToFit()
+        }
+    }
+
+    func catchProgressNotification(notification : Notification) {
         
         uploadName.text = "IMG_\(smallId).JPG" as String
-        
         guard let progress = notification.userInfo as? [String : Float] else { return }
         for (value) in progress.values {
             progressBarView.setProgress(value, animated: true)
         }
     }
 
-    
-    func createContent() -> [Progress]{
-        var arr : [Progress] = []
-        let newContent = Progress(image: thumbnailImage!.image!, label: "ImageUpload.JPG", progress: 0)
-        
-        arr.append(newContent)
-        
-        return arr
-    }
     
     func randomStringWithLength(len: Int) -> NSString {
         
@@ -96,20 +93,28 @@ class ProgressTableViewCellControllerTableViewCell: UITableViewCell {
         }
         return randomString
     }
-    
-}
+    var isPaused = false
+    @IBAction func abortSequenceButtonPressed(_ sender: UIButton) {
+        
+        if isPaused == false{
+            cameraVC.uploadTask?.pause()
+            progressBarView.setProgress(0.0, animated: true)
+            uploadName.text = "Upload Cancelled"
+            abortButton.setImage(UIImage(named: "upload"), for: .normal)
+            isPaused = true
+        }
+        else{
+            cameraVC.uploadTask?.resume()
+            abortButton.setImage(UIImage(named: "Close"), for: .normal)
+            abortButton.tintColor = .red
+            NotificationCenter.default.addObserver(forName: progressBarNotification,
+                                                   object: nil,
+                                                   queue: nil,
+                                                   using: catchProgressNotification)
+            isPaused = false
+        }
 
-
-
-
-struct Progress {
-    
-    var image : UIImage
-    var label : String
-    var progress : Double
-    init(image : UIImage, label : String, progress : Double) {
-        self.image = image
-        self.label = label
-        self.progress = progress
     }
+    
 }
+

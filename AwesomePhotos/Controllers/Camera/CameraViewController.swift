@@ -21,7 +21,8 @@ class CameraViewController : UIViewController
     let db = Firestore.firestore()
     let userUid = Auth.auth().currentUser?.uid
     let userEmail = Auth.auth().currentUser?.email
-    
+    var uploadTask : StorageUploadTask?
+
     //MARK: - Initialization
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -174,7 +175,7 @@ extension CameraViewController : AVCapturePhotoCaptureDelegate, UploadImageDeleg
     }
     
     
-    func uploadImage() {
+    func uploadImage()  {
         let id = UUID()
         let photoName = id.uuidString
         
@@ -195,45 +196,26 @@ extension CameraViewController : AVCapturePhotoCaptureDelegate, UploadImageDeleg
         }
         
         //Add to user document
-        self.db.collection("users").document(userUid!).updateData(
-            ["ownedPhotos":FieldValue.arrayUnion([ref!.documentID])]
-        )
+//        self.db.collection("users").document(userUid!).updateData(
+//            ["ownedPhotos":FieldValue.arrayUnion([ref!.documentID])]
+//        )\(userUid!)
         
         //Upload to Firebase
         for (key,value) in PhotoTypesConstants {
             let storageReference: StorageReference = {
                 return Storage.storage()
                     .reference(forURL: "gs://awesomephotos-b794e.appspot.com/")
-                    .child("User/\(userUid!)/Uploads/Photo/\((ref?.documentID)!)/\(value)")
+                    .child("User/Uploads/Photo/\((ref?.documentID)!)/\(value)")
             }()
             
             let uploadImageRef = storageReference.child(id.uuidString + "-\(value).jpg")
-            let uploadTask = uploadImageRef.putData(key == "WatermarkPhoto" ? imageDataWm : imageData, metadata : nil) { (metadata, error) in
+            uploadTask = uploadImageRef.putData(key == "WatermarkPhoto" ? imageDataWm : imageData, metadata : nil) { (metadata, error) in
                 if let error = error {
                     print(error.localizedDescription)
                 } else {
                     print("Upload to Firebase Storage finished. ")
                 }
             }
-            
-            
-            //Observes where the progress of the file is at in %
-            uploadTask.observe(.progress) { [weak self] (snapshot) in
-                guard let progressStatus = snapshot.progress else { return }
-                
-                self!.progressStatusCompleted = Float(progressStatus.fractionCompleted)
-                
-                //Adds observer to listen when photo is being uploaded
-                let progressName = Notification.Name(rawValue: progressCapturedKey)
-                let statuses = ["" : self!.progressStatusCompleted]
-                NotificationCenter.default.post(name: progressName, object: self, userInfo: statuses as [AnyHashable : Any])
-            }
-            
-            let thumbnailName = Notification.Name(rawValue: thumbnailCapturedKey)
-            NotificationCenter.default.post(name: thumbnailName, object: self)
-            
-            
-            
             
             let uploadPath: [String:Any] = ["pathTo\(value.uppercased())":uploadImageRef.fullPath]
             db.collection("photos").document(ref!.documentID).updateData(uploadPath) {
@@ -244,7 +226,27 @@ extension CameraViewController : AVCapturePhotoCaptureDelegate, UploadImageDeleg
                     print("Path to storage sucessfully set. ")
                 }
             }
+            progressOfUpload()
         }
+    }
+    
+    func progressOfUpload(){
+        
+        let progressName = Notification.Name(rawValue: progressCapturedKey)
+        //Observes where the progress of the file is at in %
+        uploadTask!.observe(.progress) { [weak self] (snapshot) in
+            guard let progressStatus = snapshot.progress else { return }
+            
+            self!.progressStatusCompleted = Float(progressStatus.fractionCompleted)
+            
+            //Adds observer to listen when photo is being uploaded
+            let statuses = ["" : self!.progressStatusCompleted]
+            NotificationCenter.default.post(name: progressName, object: self, userInfo: statuses as [AnyHashable : Any])
+        }
+    }
+    
+    func cancelUpload(){
+        uploadTask?.cancel()
     }
     
     fileprivate func makeWmCopyOfImage() {
