@@ -20,6 +20,7 @@ class PreviewVideoViewController : UIViewController
     @IBOutlet weak var slider: UISlider!
     @IBOutlet weak var UploadButton: UIButton!
     weak var delegate: UploadVideoDelegate? = nil
+    var videoVC = VideoViewController()
     
     //MARK: - Initialization
     override func viewDidLoad() {
@@ -173,6 +174,7 @@ class PreviewVideoViewController : UIViewController
     
     @IBAction func uploadButtonPressed(_ sender: UIButton) {
         self.delegate?.uploadVideo()
+        //videoVC.observeVideoProgress()
         performSegue(withIdentifier: "segueToProgress", sender: self)
     }
     //7. Dismisses the video preview

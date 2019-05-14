@@ -81,12 +81,10 @@ class PreviewmageViewController : UIViewController {
     @IBAction func uploadToStorageButtonPressed(_ sender: UIButton) {
         self.delegate?.uploadImage()
         
-        let images = ["" : self.image]
-        let thumbnailName = Notification.Name(rawValue: thumbnailCapturedKey)
-        NotificationCenter.default.post(name: thumbnailName, object: self, userInfo: images as  [AnyHashable : Any])
-        
-        
-        
+//        let images = ["IMG" : self.image]
+//        let thumbnailName = Notification.Name(rawValue: thumbnailCapturedKey)
+//        NotificationCenter.default.post(name: thumbnailName, object: self, userInfo: images as  [AnyHashable : Any])
+    
         performSegue(withIdentifier: "segueToProgress", sender: self)
         print("Uploading to Storage")
     }
@@ -109,12 +107,3 @@ class PreviewmageViewController : UIViewController {
         dismiss(animated: true, completion: nil)
     }
 }
-
-
-//!! Tracks progress of image uplaoding -- might be used for later 
-//            uploadTask.observe(.progress){ (snapshot) in
-//                print(snapshot.progress ?? "Progress cancelled")
-//            }
-//            uploadTask.resume()
-//            dismiss(animated: true, completion: nil)
-//       }

@@ -5,7 +5,7 @@ import FirebaseStorage
 
 class DownloadImageViewController : UIViewController {
     
-    let storageReference : StorageReference = {
+    lazy var storageReference : StorageReference = {
         return Storage.storage().reference(forURL: "gs://awesomephotos-b794e.appspot.com/").child("photos")
     }()
     

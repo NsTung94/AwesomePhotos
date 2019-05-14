@@ -139,7 +139,7 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
             movieFileOutput.startRecording(to: self.videoLocation()!, recordingDelegate: self)
         }
     }
-    
+   // \(self.userUid!)
     func uploadVideo() {
         //Upload video to firestorage
         let id = UUID()
@@ -154,7 +154,7 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
                 // Create FireStore path
                 for (key , value) in PhotoTypesConstants{
                     let videoStorageReference : StorageReference = {
-                        return Storage.storage().reference(forURL : "gs://awesomephotos-b794e.appspot.com/").child("User/\(self.userUid!)/Uploads/Medias/\((self.reference?.documentID)!)/\(value)")  }()
+                        return Storage.storage().reference(forURL : "gs://awesomephotos-b794e.appspot.com/").child("User/Uploads/Medias/\((self.reference?.documentID)!)/\(value)")  }()
                     
                     let storageMetaData = StorageMetadata()
                     storageMetaData.contentType = "video/quicktime"
@@ -173,6 +173,7 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
                                     if (error != nil) {
                                         print("Error is", error as Any)
                                     } else {
+                                        
                                         print("Upload to storage finished")
                                         
                                         let uploadPath: [String:Any] = ["pathTo\(value.uppercased())":uploadVideoPath.fullPath]
@@ -186,9 +187,12 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
                                         }
                                     }
                                 }
+                                self.observeVideoProgress()
                             }
                         }
-                    } else {
+                    }
+
+                    else {
                         let uploadVideoPath = videoStorageReference.child(videoName + "-\(value).mov")
                         _ = uploadVideoPath.putFile(from: self.videoLocation()!, metadata: storageMetaData){metadata, error in
                             if (error != nil) {
@@ -208,13 +212,12 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
                             }
                         }
                     }
-                    self.observeVideoProgress()
                 }
             }
         }
         
-        self.db.collection("users").document(userUid!).updateData(
-            ["ownedVideos":FieldValue.arrayUnion([reference!.documentID])])
+//        self.db.collection("users").document(userUid!).updateData(
+//            ["ownedVideos":FieldValue.arrayUnion([reference!.documentID])])
     }
     
     func observeVideoProgress(){
@@ -228,14 +231,19 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
             self!.progressStatusCompleted = Float(progressStatus.fractionCompleted)
             
             //Adds observer to listen when photo is being uploaded
-            let statuses = ["" : self!.progressStatusCompleted]
+            let statuses = ["MOV" : self!.progressStatusCompleted]
             NotificationCenter.default.post(name: progressName, object: self, userInfo: statuses as [AnyHashable : Any])
         }
         
-        let thumbnailName = Notification.Name(rawValue: thumbnailCapturedKey)
-        NotificationCenter.default.post(name: thumbnailName, object: self)
+//        let thumbnailName = Notification.Name(rawValue: thumbnailCapturedKey)
+//        NotificationCenter.default.post(name: thumbnailName, object: self)
         
     }
+    
+    
+    
+    
+    
     
    
     

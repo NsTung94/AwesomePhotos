@@ -230,6 +230,10 @@ extension CameraViewController : AVCapturePhotoCaptureDelegate, UploadImageDeleg
         }
     }
     
+    
+    
+    
+    
     func progressOfUpload(){
         
         let progressName = Notification.Name(rawValue: progressCapturedKey)
@@ -240,7 +244,7 @@ extension CameraViewController : AVCapturePhotoCaptureDelegate, UploadImageDeleg
             self!.progressStatusCompleted = Float(progressStatus.fractionCompleted)
             
             //Adds observer to listen when photo is being uploaded
-            let statuses = ["" : self!.progressStatusCompleted]
+            let statuses = ["IMG" : self!.progressStatusCompleted]
             NotificationCenter.default.post(name: progressName, object: self, userInfo: statuses as [AnyHashable : Any])
         }
     }
@@ -248,6 +252,13 @@ extension CameraViewController : AVCapturePhotoCaptureDelegate, UploadImageDeleg
     func cancelUpload(){
         uploadTask?.cancel()
     }
+    
+    
+    
+    
+    
+    
+    
     
     fileprivate func makeWmCopyOfImage() {
         let item = MediaItem(image: image!)
