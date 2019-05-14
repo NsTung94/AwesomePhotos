@@ -364,6 +364,7 @@
                                         </state>
                                         <connections>
                                             <action selector="uploadButtonPressed:" destination="HJ6-xm-zRx" eventType="touchUpInside" id="O0P-n2-ARz"/>
+                                            <segue destination="NHV-WF-GNJ" kind="presentation" identifier="segueToProgress" id="6wh-xl-zJ0"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -457,7 +458,7 @@
                                 </state>
                                 <connections>
                                     <action selector="uploadToStorageButtonPressed:" destination="XcJ-8d-f5M" eventType="touchUpInside" id="Tag-hU-ybb"/>
-                                    <segue destination="NHV-WF-GNJ" kind="show" identifier="segueToProgress" id="WPY-AS-YE3"/>
+                                    <segue destination="NHV-WF-GNJ" kind="presentation" identifier="segueToProgress" id="WPY-AS-YE3"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ieW-OW-rMf" userLabel="discardBtn">
@@ -585,7 +586,7 @@
                 <viewControllerPlaceholder storyboardName="Progress" id="NHV-WF-GNJ" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Fki-Jz-jns" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="259" y="1077"/>
+            <point key="canvasLocation" x="59" y="1661"/>
         </scene>
     </scenes>
     <resources>
@@ -601,5 +602,8 @@
         <image name="Upload" width="72" height="72"/>
         <image name="WhiteCamera" width="72" height="72"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="6wh-xl-zJ0"/>
+    </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.85490196080000003" green="0.2156862745" blue="0.17254901959999999" alpha="1" colorSpace="calibratedRGB"/>
 </document>

@@ -23,6 +23,8 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
     @IBOutlet weak var fileStorage: UIButton!
     @IBOutlet weak var recordingButton: UIButton!
     @IBOutlet weak var darkBottomView: UIView!
+    var progressStatusCompleted : Float!
+    var uploadTask : StorageUploadTask?
     
     let db = Firestore.firestore()
     let userUid = Auth.auth().currentUser?.uid
@@ -137,6 +139,8 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
         }
     }
     
+    //\(self.userUid!)
+    
     func uploadVideo() {
         //Upload video to firestorage
         let id = UUID()
@@ -149,9 +153,9 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
                 print("Upload to Firestore finished")
                 
                 // Create FireStore path
-                for (key , value) in PhotoTypesConstants{
+                for (key, value) in PhotoTypesConstants{
                     let videoStorageReference : StorageReference = {
-                        return Storage.storage().reference(forURL : "gs://awesomephotos-b794e.appspot.com/").child("User/\(self.userUid!)/Uploads/Medias/\((self.reference?.documentID)!)/\(value)")  }()
+                        return Storage.storage().reference(forURL : "gs://awesomephotos-b794e.appspot.com/").child("User/Uploads/Medias/\((self.reference?.documentID)!)/\(value)")  }()
                     
                     let storageMetaData = StorageMetadata()
                     storageMetaData.contentType = "video/quicktime"
@@ -165,7 +169,7 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
                                 print(error.localizedDescription)
                             } else {
                                 let uploadVideoPath = videoStorageReference.child(videoName + "-\(value).mov")
-                                _ = uploadVideoPath.putFile(from: result.processedUrl!, metadata: storageMetaData){metadata, error in
+                                self.uploadTask = uploadVideoPath.putFile(from: result.processedUrl!, metadata: storageMetaData){metadata, error in
                                     if (error != nil) {
                                         print("Error is", error as Any)
                                     } else {
@@ -182,9 +186,11 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
                                         }
                                     }
                                 }
+                                self.observeVideoUpload()
                             }
                         }
-                    } else {
+                    }
+                    else {
                         let uploadVideoPath = videoStorageReference.child(videoName + "-\(value).mov")
                         _ = uploadVideoPath.putFile(from: self.videoLocation()!, metadata: storageMetaData){metadata, error in
                             if (error != nil) {
@@ -207,12 +213,26 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
                 }
             }
         }
-        
-        self.db.collection("users").document(userUid!).updateData(
-            ["ownedVideos":FieldValue.arrayUnion([reference!.documentID])])
+//
+//        self.db.collection("users").document(userUid!).updateData(
+//            ["ownedVideos":FieldValue.arrayUnion([reference!.documentID])])
     }
     
-   
+    func observeVideoUpload(){
+        //Observes where the progress of the file is at in %
+        uploadTask!.observe(.progress) { [weak self] (snapshot) in
+            guard let progressStatus = snapshot.progress else { return }
+            
+            self!.progressStatusCompleted = Float(progressStatus.fractionCompleted)
+            
+            //Adds observer to listen when photo is being uploaded
+            let progressName = Notification.Name(rawValue: progressCapturedKey)
+            let statuses = ["MOV" : self!.progressStatusCompleted]
+            NotificationCenter.default.post(name: progressName, object: self, userInfo: statuses as [AnyHashable : Any])
+        }
+//        let thumbnailName = Notification.Name(rawValue: thumbnailCapturedKey)
+//        NotificationCenter.default.post(name: thumbnailName, object: self)
+    }
     
     //7. Stores the video in this temporary directory in the cache
     func videoLocation() -> URL? {

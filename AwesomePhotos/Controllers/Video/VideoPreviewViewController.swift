@@ -173,6 +173,7 @@ class PreviewVideoViewController : UIViewController
     
     @IBAction func uploadButtonPressed(_ sender: UIButton) {
         self.delegate?.uploadVideo()
+        performSegue(withIdentifier: "segueToProgress", sender: self)
     }
     //7. Dismisses the video preview
     @IBAction func dismissPreviewButtonPressed(_ sender: UIButton) {

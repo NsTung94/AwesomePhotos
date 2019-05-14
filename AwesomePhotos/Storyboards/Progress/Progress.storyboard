@@ -18,30 +18,47 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="0x2-nj-CGb" customClass="ProgressTableViewCellControllerTableViewCell" customModule="AwesomePhotos" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="headerCell" id="0x2-nj-CGb" customClass="ProgressHeaderCellView" customModule="AwesomePhotos" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="28" width="414" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="0x2-nj-CGb" id="xmL-PM-OjJ">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="0x2-nj-CGb" id="xmL-PM-OjJ">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="UPLOADS" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rfX-WW-fST">
+                                            <rect key="frame" x="20" y="9" width="108" height="26"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="26" id="SRV-f2-AYc"/>
+                                                <constraint firstAttribute="width" constant="108" id="TJk-E3-l7z"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="22"/>
+                                            <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="rfX-WW-fST" firstAttribute="centerY" secondItem="xmL-PM-OjJ" secondAttribute="centerY" id="147-P0-9r8"/>
+                                        <constraint firstItem="rfX-WW-fST" firstAttribute="centerX" secondItem="xmL-PM-OjJ" secondAttribute="centerX" id="awX-Ql-UWA"/>
+                                        <constraint firstItem="rfX-WW-fST" firstAttribute="leading" secondItem="xmL-PM-OjJ" secondAttribute="leading" constant="20" id="nCj-4a-1Ag"/>
+                                    </constraints>
                                 </tableViewCellContentView>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" rowHeight="63" id="osJ-K0-KJE" customClass="ProgressTableViewCellControllerTableViewCell" customModule="AwesomePhotos" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="72" width="414" height="63"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="osJ-K0-KJE" id="poy-U0-UzX">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" ambiguous="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="osJ-K0-KJE" id="poy-U0-UzX">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="62.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="818-Xp-bqC">
                                             <rect key="frame" x="66" y="32" width="290" height="16"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="16" id="nTO-Vt-aCP"/>
                                             </constraints>
-                                            <color key="progressTintColor" red="0.67836625399999995" green="1" blue="0.5707260301" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <color key="trackTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="progressTintColor" red="0.89396136999999998" green="0.26227232810000001" blue="0.1766711473" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="trackTintColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </progressView>
                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Kqy-8Y-LHY">
                                             <rect key="frame" x="8" y="6" width="50" height="50"/>
@@ -69,12 +86,12 @@
                                                 <constraint firstAttribute="width" constant="35" id="pqf-ok-igO"/>
                                             </constraints>
                                             <color key="tintColor" red="0.89396136999999998" green="0.26227232810000001" blue="0.1766711473" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <state key="normal" title="Button" image="Close">
+                                            <state key="normal" image="Close">
                                                 <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 <color key="titleShadowColor" red="0.89396136999999998" green="0.26227232810000001" blue="0.1766711473" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <connections>
-                                                <action selector="abortSequenceButtonPressed:" destination="osJ-K0-KJE" eventType="touchUpInside" id="OY7-bd-ah9"/>
+                                                <action selector="abortSequence:" destination="osJ-K0-KJE" eventType="touchUpInside" id="QZX-IJ-oi8"/>
                                             </connections>
                                         </button>
                                     </subviews>

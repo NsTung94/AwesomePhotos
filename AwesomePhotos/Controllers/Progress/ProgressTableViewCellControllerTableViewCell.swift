@@ -22,6 +22,7 @@ class ProgressTableViewCellControllerTableViewCell: UITableViewCell {
     let thumbnailNotification = Notification.Name(rawValue: thumbnailCapturedKey)
     
     var preview = PreviewmageViewController()
+    var cameraVC = CameraViewController()
     lazy var smallId = randomStringWithLength(len: 6)
     
     override func awakeFromNib() {
@@ -47,10 +48,6 @@ class ProgressTableViewCellControllerTableViewCell: UITableViewCell {
         }
     }
     
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
-    
     //Removes leftover observers
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -65,10 +62,14 @@ class ProgressTableViewCellControllerTableViewCell: UITableViewCell {
     
     func catchProgressNotification(notification:Notification){
         
-        uploadName.text = "IMG_\(smallId).JPG" as String
-        
         guard let progress = notification.userInfo as? [String : Float] else { return }
-        for (value) in progress.values {
+        for (key, value) in progress {
+            if key == "IMG"{
+                uploadName.text = "IMG_\(smallId).JPG" as String
+            }
+            else{
+                uploadName.text = "VID_\(smallId).MOV" as String
+            }
             progressBarView.setProgress(value, animated: true)
         }
     }
@@ -76,7 +77,7 @@ class ProgressTableViewCellControllerTableViewCell: UITableViewCell {
     
     func createContent() -> [Progress]{
         var arr : [Progress] = []
-        let newContent = Progress(image: thumbnailImage!.image!, label: "ImageUpload.JPG", progress: 0)
+        let newContent = Progress(image: UIImage(named: "shutter")!, label: "", progress: 0)
         
         arr.append(newContent)
         
@@ -97,10 +98,30 @@ class ProgressTableViewCellControllerTableViewCell: UITableViewCell {
         return randomString
     }
     
+    var isPaused = false
+    
+    @IBAction func abortSequence(_ sender: UIButton) {
+        
+        
+        if isPaused == false{
+            cameraVC.uploadTask?.pause()
+            progressBarView.setProgress(0.0, animated: true)
+            uploadName.text = "Upload Cancelled"
+            abortButton.setImage(UIImage(named: "upload"), for: .normal)
+            isPaused = true
+        }
+        else{
+            cameraVC.uploadTask?.resume()
+            abortButton.setImage(UIImage(named: "Close"), for: .normal)
+            abortButton.tintColor = .red
+            NotificationCenter.default.addObserver(forName: progressBarNotification,
+                                                   object: nil,
+                                                   queue: nil,
+                                                   using: catchProgressNotification)
+            isPaused = false
+        }
+    }
 }
-
-
-
 
 struct Progress {
     
