@@ -14,20 +14,23 @@ class ProgressViewController : UIViewController{
     var progressCells : [Progress] = []
     var preview = PreviewmageViewController()
     var cameraVC = CameraViewController()
-    var progressTableCell = ProgressTableViewCellControllerTableViewCell()
+    var p = ProgressTableViewCellControllerTableViewCell()
     
     override func viewDidLoad(){
         super.viewDidLoad()
-        progressCells = progressTableCell.createContent()
-        self.dismiss(animated: true)
+        progressCells = createContent()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        self.tableview.reloadData()
+    //2. Creates content for cells
+    func createContent() -> [Progress]{
+        var arr : [Progress] = []
+        let newContent = Progress(label: "Loading...", progress: 0.0)
+        arr.append(newContent)
+        
+        return arr
     }
 }
 
-//Removes a soon to be uploaded media from the queue
 extension ProgressViewController : UITableViewDelegate, UITableViewDataSource {
    
     //CELLS

@@ -139,7 +139,7 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
         }
     }
     
-    //\(self.userUid!)
+    
     
     func uploadVideo() {
         //Upload video to firestorage
@@ -155,7 +155,7 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
                 // Create FireStore path
                 for (key, value) in PhotoTypesConstants{
                     let videoStorageReference : StorageReference = {
-                        return Storage.storage().reference(forURL : "gs://awesomephotos-b794e.appspot.com/").child("User/Uploads/Medias/\((self.reference?.documentID)!)/\(value)")  }()
+                        return Storage.storage().reference(forURL : "gs://awesomephotos-b794e.appspot.com/").child("User/\(self.userUid!)/Uploads/Medias/\((self.reference?.documentID)!)/\(value)")  }()
                     
                     let storageMetaData = StorageMetadata()
                     storageMetaData.contentType = "video/quicktime"
@@ -213,9 +213,9 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
                 }
             }
         }
-//
-//        self.db.collection("users").document(userUid!).updateData(
-//            ["ownedVideos":FieldValue.arrayUnion([reference!.documentID])])
+
+        self.db.collection("users").document(userUid!).updateData(
+            ["ownedVideos":FieldValue.arrayUnion([reference!.documentID])])
     }
     
     func observeVideoUpload(){
@@ -230,9 +230,13 @@ class VideoViewController : UIViewController, AVCaptureFileOutputRecordingDelega
             let statuses = ["MOV" : self!.progressStatusCompleted]
             NotificationCenter.default.post(name: progressName, object: self, userInfo: statuses as [AnyHashable : Any])
         }
+    }
 //        let thumbnailName = Notification.Name(rawValue: thumbnailCapturedKey)
 //        NotificationCenter.default.post(name: thumbnailName, object: self)
-    }
+    
+    
+    
+    
     
     //7. Stores the video in this temporary directory in the cache
     func videoLocation() -> URL? {

@@ -196,16 +196,16 @@ extension CameraViewController : AVCapturePhotoCaptureDelegate, UploadImageDeleg
         }
         
         //Add to user document
-//        self.db.collection("users").document(userUid!).updateData(
-//            ["ownedPhotos":FieldValue.arrayUnion([ref!.documentID])]
-//        )/\(userUid!)
+        self.db.collection("users").document(userUid!).updateData(
+            ["ownedPhotos":FieldValue.arrayUnion([ref!.documentID])]
+        )
         
         //Upload to Firebase
         for (key,value) in PhotoTypesConstants {
             let storageReference: StorageReference = {
                 return Storage.storage()
                     .reference(forURL: "gs://awesomephotos-b794e.appspot.com/")
-                    .child("User/Uploads/Photo/\((ref?.documentID)!)/\(value)")
+                    .child("User/\(userUid!)/Uploads/Photo/\((ref?.documentID)!)/\(value)")
             }()
             
             let uploadImageRef = storageReference.child(id.uuidString + "-\(value).jpg")
@@ -216,9 +216,9 @@ extension CameraViewController : AVCapturePhotoCaptureDelegate, UploadImageDeleg
                     print("Upload to Firebase Storage finished. ")
                 }
             }
-            
+
             observeImageUpload()
-            
+
             let uploadPath: [String:Any] = ["pathTo\(value.uppercased())":uploadImageRef.fullPath]
             db.collection("photos").document(ref!.documentID).updateData(uploadPath) {
                 err in
@@ -243,11 +243,11 @@ extension CameraViewController : AVCapturePhotoCaptureDelegate, UploadImageDeleg
             let statuses = ["IMG" : self!.progressStatusCompleted]
             NotificationCenter.default.post(name: progressName, object: self, userInfo: statuses as [AnyHashable : Any])
         }
-        
-        let thumbnailName = Notification.Name(rawValue: thumbnailCapturedKey)
-        NotificationCenter.default.post(name: thumbnailName, object: nil)
     }
     
+    func cancelUpload(){
+        uploadTask?.cancel()
+    }
     
     
     fileprivate func makeWmCopyOfImage() {
