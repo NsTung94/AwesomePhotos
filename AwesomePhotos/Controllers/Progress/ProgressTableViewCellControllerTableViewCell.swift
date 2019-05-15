@@ -23,7 +23,6 @@ class ProgressTableViewCellControllerTableViewCell: UITableViewCell {
     var cameraVC = CameraViewController()
     lazy var smallId = randomStringWithLength(len: 6)
     var isPaused = false
-
     
     //MARK:- INITIALIZATION
     override func awakeFromNib() {
@@ -39,14 +38,6 @@ class ProgressTableViewCellControllerTableViewCell: UITableViewCell {
                                                queue: nil,
                                                using: catchProgressNotification)
 
-        
-//        NotificationCenter.default.addObserver(forName: thumbnailNotification,
-//                                               object: nil,
-//                                               queue: nil)
-//        { (notification) in
-//            let preview = notification.object as! PreviewmageViewController
-//            self.thumbnailImage?.image = preview.photo.image
-//        }
     }
     override func setSelected(_ selected: Bool, animated: Bool) {
         
@@ -96,7 +87,6 @@ class ProgressTableViewCellControllerTableViewCell: UITableViewCell {
         }
         return randomString
     }
-    
     
     //5. Cancels the upload of the media.
     @IBAction func abortSequence(_ sender: UIButton) {

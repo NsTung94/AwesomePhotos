@@ -8,6 +8,8 @@
 import Foundation
 import UIKit
 
+
+
 class ProgressViewController : UIViewController{
     
     @IBOutlet var tableview: UITableView!
@@ -18,16 +20,14 @@ class ProgressViewController : UIViewController{
     
     override func viewDidLoad(){
         super.viewDidLoad()
-        progressCells = createContent()
+        createContent()
     }
     
     //2. Creates content for cells
-    func createContent() -> [Progress]{
-        var arr : [Progress] = []
+    func createContent(){
+
         let newContent = Progress(label: "Loading...", progress: 0.0)
-        arr.append(newContent)
-        
-        return arr
+        progressCells.append(newContent)
     }
 }
 
@@ -52,6 +52,7 @@ extension ProgressViewController : UITableViewDelegate, UITableViewDataSource {
         guard editingStyle == .delete else { return }
 
         progressCells.remove(at: indexPath.row)
+        cameraVC.uploadTask?.cancel()
         tableView.deleteRows(at: [indexPath], with: .automatic )
     }
     
@@ -66,7 +67,6 @@ extension ProgressViewController : UITableViewDelegate, UITableViewDataSource {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "headerCell") as! ProgressHeaderCellView
         return cell.bounds.height
-        
     }
 }
 
