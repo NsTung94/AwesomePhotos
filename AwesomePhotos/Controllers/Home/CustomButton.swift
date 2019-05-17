@@ -48,8 +48,9 @@ class CustomButton: UITabBarController{
     @objc func menuButtonAction(sender: UIButton) {
         let cameraStoryboard: UIStoryboard = UIStoryboard(name: "Camera", bundle: nil)
         let cameraController: CameraViewController = cameraStoryboard.instantiateViewController(withIdentifier: "CameraController") as! CameraViewController
-        let navController = UINavigationController(rootViewController: cameraController)
-        self.present(navController, animated: true, completion: nil)
-        
+        DispatchQueue.main.async {[unowned self] in
+            let navController = UINavigationController(rootViewController: cameraController)
+            self.present(navController, animated: true, completion: nil)
+        }
     }
 }

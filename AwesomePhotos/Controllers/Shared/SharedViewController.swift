@@ -106,49 +106,53 @@ class SharedViewController: UIViewController, UICollectionViewDataSource, UIColl
         self.activityIndicator.startAnimating()
         let videoUid = videosUid[indexPath.row]
         cell.myImage.image = nil
-        self.db.collection("medias").document(videoUid).getDocument{document, error in
-            if let document = document, document.exists {
-                guard let data = document.data() else { return }
-                var videoType = ""
-                if self.nwmVideosUid.contains(videoUid) {
-                    videoType = "pathToNWM"
-                } else {
-                    videoType = "pathToWM"
-                }
-                if videoType == "" { return }
-                // If there is cache
-                if let imageFromCache = self.thumbnailCache.object(forKey: videoUid as NSString) {
-                    cell.myImage.image = imageFromCache
-                    self.activityIndicator.stopAnimating()
-                    // If the is no cache
-                } else {
-                    let reference = Storage.storage().reference(forURL: "gs://awesomephotos-b794e.appspot.com/").child(data[videoType] as! String)
-                    reference.downloadURL { url, error in
-                        if let error = error {
-                            print(error.localizedDescription)
-                        } else {
-                            let downloadURL = url
-                            let thumbnail = self.createThumbnailOfVideoFromRemoteUrl(url: downloadURL!.absoluteString)
-                            DispatchQueue.global(qos: .background).async {
-                                if thumbnail != nil {
-                                    let mediaProcessor = MediaProcessor()
-                                    mediaProcessor.processElements(item: self.makeWmCopyOfImage(thumbnail: thumbnail!)) {(result, error) in
-                                        DispatchQueue.main.async {
-                                            self.thumbnailCache.setObject(result.image!, forKey: videoUid as NSString)
-                                            cell.myImage.image = result.image
-                                            self.activityIndicator.stopAnimating()
+        DispatchQueue.global().async {[unowned self] in
+            self.db.collection("medias").document(videoUid).getDocument{[unowned self] document, error in
+                if let document = document, document.exists {
+                    guard let data = document.data() else { return }
+                    var videoType = ""
+                    if self.nwmVideosUid.contains(videoUid) {
+                        videoType = "pathToNWM"
+                    } else {
+                        videoType = "pathToWM"
+                    }
+                    if videoType == "" { return }
+                    // If there is cache
+                    if let imageFromCache = self.thumbnailCache.object(forKey: videoUid as NSString) {
+                        cell.myImage.image = imageFromCache
+                        self.activityIndicator.stopAnimating()
+                        // If the is no cache
+                    } else {
+                        let reference = Storage.storage().reference(forURL: "gs://awesomephotos-b794e.appspot.com/").child(data[videoType] as! String)
+                        DispatchQueue.global().async {[unowned self] in
+                            reference.downloadURL { url, error in
+                                if let error = error {
+                                    print(error.localizedDescription)
+                                } else {
+                                    let downloadURL = url
+                                    let thumbnail = self.createThumbnailOfVideoFromRemoteUrl(url: downloadURL!.absoluteString)
+                                    DispatchQueue.global().async {[unowned self] in
+                                        if thumbnail != nil {
+                                            let mediaProcessor = MediaProcessor()
+                                            mediaProcessor.processElements(item: self.makeWmCopyOfImage(thumbnail: thumbnail!)) {(result, error) in
+                                                DispatchQueue.main.async {[unowned self] in
+                                                    self.thumbnailCache.setObject(result.image!, forKey: videoUid as NSString)
+                                                    cell.myImage.image = result.image
+                                                    self.activityIndicator.stopAnimating()
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
+                    cell.filePath = data[videoType] as? String
+                    cell.photoUid = videoUid
+                } else {
+                    print("Document does not exist")
+                    return
                 }
-                cell.filePath = data[videoType] as? String
-                cell.photoUid = videoUid
-            } else {
-                print("Document does not exist")
-                return
             }
         }
     }
